@@ -1,57 +1,157 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Modal from '@mui/material/Modal';
+import { UserContext } from "../userContext/userContext";
+import { toast , ToastContainer} from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 const LoginForm = () => {
-  const navigate =useNavigate()
+  const [open, setOpen] = useState(false);
+  const { setUser } = useContext(UserContext); // Assuming you want to use UserContext
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
 
-  const handleLogin =()=>{
-    navigate('/dashboard')
-  }
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setEmailError('')
+    setPasswordError('')
+
+     // Check if the user has entered both fields correctly
+     if ('' === email) {
+      setEmailError('Please enter your email')
+      toast.error('Please enter your email',{
+         
+        className: "toast-message"
+      });
+      return
+    }
   
-    return (
-      <>
-<div class="h-screen md:flex">
-	<div
-		class="relative overflow-hidden md:flex w-1/2 bg-gradient-to-tr from-blue-800 to-purple-700 i justify-around items-center hidden">
-		<div>
-			<h1 class="text-white font-bold text-4xl font-sans">HomeKey</h1>
-			<p class="text-white mt-1">The most popular space for renting </p>
-			
-		</div>
-		<div class="absolute -bottom-32 -left-40 w-80 h-80 border-4 rounded-full border-opacity-30 border-t-8"></div>
-		<div class="absolute -bottom-40 -left-20 w-80 h-80 border-4 rounded-full border-opacity-30 border-t-8"></div>
-		<div class="absolute -top-40 -right-0 w-80 h-80 border-4 rounded-full border-opacity-30 border-t-8"></div>
-		<div class="absolute -top-20 -right-20 w-80 h-80 border-4 rounded-full border-opacity-30 border-t-8"></div>
-	</div>
-	<div class="flex md:w-1/2 justify-center py-10 items-center bg-white">
-		<form class="bg-white">
-			<h1 class="text-gray-800 font-bold text-2xl mb-1">Hello Admin!</h1>
-			<p class="text-sm font-normal text-gray-600 mb-7">Welcome Back</p>
-				
-					<div class="flex items-center border-2 py-2 px-3 rounded-2xl mb-4">
-						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none"
-							viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-								d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-						</svg>
-						<input class="pl-2 outline-none border-none" type="text" name="" id="" placeholder="Email Address" />
-      </div>
-						<div class="flex items-center border-2 py-2 px-3 rounded-2xl">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20"
-								fill="currentColor">
-								<path fill-rule="evenodd"
-									d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-									clip-rule="evenodd" />
-							</svg>
-							<input class="pl-2 outline-none border-none" type="text" name="" id="" placeholder="Password" />
-      </div>
-							<button type="submit" class="block w-full bg-indigo-600 mt-4 py-2 rounded-2xl text-white font-semibold mb-2" onClick={handleLogin}>Login</button>
-							<span class="text-sm ml-2 hover:text-blue-500 cursor-pointer">Forgot Password ?</span>
-		</form>
-	</div>
-</div>
-      </>
-    )
-  }
+    if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+      setEmailError('Please enter a valid email')
+      toast.error('Please enter your email',{
+         
+        className: "toast-message"
+      });
+      return
+    }
   
-  export default LoginForm
+    if ('' === password) {
+      setPasswordError('Please enter a password')
+      toast.error('Please enter a password',{
+         
+        className: "toast-message"
+      });
+      return
+    }
+  
+    
+      // Authentication calls will be made here...
+
+    try {
+      const response = await fetch('http://localhost:3000/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('accessToken', data.token);
+
+      // Assuming your response contains user data
+      
+
+      console.log(data);
+
+      if (data) {
+        handleOpen();
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 2000);
+      } else {
+        console.log("You are not an admin");
+        toast.error('check your crendientials',{
+         
+          className: "toast-message"
+        });
+      }
+    } catch (err) {
+      console.log(err.message);
+      toast.error('check your crendientials',{
+         
+        className: "toast-message"
+      });
+    }
+  };
+
+  return (
+    <>
+      <div className="h-screen md:flex">
+        <div className="relative overflow-hidden md:flex w-1/2 bg-gradient-to-tr from-blue-800 to-purple-700 justify-around items-center hidden">
+          <div>
+            <h1 className="text-white font-bold text-4xl font-sans">Vacay</h1>
+
+            <p className="text-white mt-1">The most popular space for renting </p>
+          </div>
+        </div>
+        <div className="flex md:w-1/2 justify-center py-10 items-center bg-white">
+          <form className="bg-white" onSubmit={handleLogin}>
+            <h1 className="text-gray-800 font-bold text-2xl mb-1">Hello Admin!</h1>
+            <p className="text-sm font-normal text-gray-600 mb-7">Welcome Back</p>
+            <div className="flex items-center border-2 py-2 px-3 rounded-2xl mb-4">
+              <input
+                className="pl-2 outline-none border-none"
+                type="text"
+                placeholder="Email Address"
+                value={email}
+                onChange={(ev) => setEmail(ev.target.value)}
+              />
+            </div>
+            <div className="flex items-center border-2 py-2 px-3 rounded-2xl">
+              <input
+                className="pl-2 outline-none border-none"
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(ev) => setPassword(ev.target.value)}
+              />
+            </div>
+            <button
+              type="submit"
+              className="block w-full bg-indigo-600 mt-4 py-2 rounded-2xl text-white font-semibold mb-2"
+            >
+              Login
+            </button>
+            <span className="text-sm ml-2 hover:text-blue-500 cursor-pointer">Forgot Password?</span>
+          </form>
+        </div>
+      </div>
+
+      <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+        <div className="w-full h-full flex items-center justify-center">
+          <div className="sm:w-[385px] sm:min-w-[40vw] min-w-[80vw] min-h-[40vh] flex flex-col items-center gap-2 p-6 bg-[#FFFFEB] rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" className="text-[#059669] mx-auto h-11 rounded-full bg-[#D1FAE5] w-11" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="text-2xl font-medium">Login Successful</span>
+            <p className="text-center">You will be redirected to your dashboard shortly.</p>
+          </div>
+        </div>
+      </Modal>
+      <ToastContainer/>
+    </>
+  );
+};
+
+export default LoginForm;

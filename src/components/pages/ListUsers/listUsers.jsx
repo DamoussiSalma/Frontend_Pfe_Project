@@ -3,6 +3,7 @@ import Navbar from "../../header/navbar";
 import { MembersTable } from "../../table/table";
 import './listUsers.scss';
 
+
 const ListUsers = () => {
     return (
       <div className='list'>
@@ -10,7 +11,7 @@ const ListUsers = () => {
         <div className='listContainer'>
           <Navbar/>
           <div className="tableSection">
-          <MembersTable/>
+          <MembersTable />
           </div>
         </div>
       </div>

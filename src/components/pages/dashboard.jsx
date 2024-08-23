@@ -4,7 +4,7 @@ import Navbar from "../header/navbar";
 import Widget from "../widget/widget";
 const Dashboard = () => {
     return (
-      <div className="home">
+    <div className="home">
       <Sidebar />
       <div className="homeContainer">
         <Navbar />
@@ -14,6 +14,7 @@ const Dashboard = () => {
           <Widget type="reservation" />
           <Widget type="balance" />
         </div>
+        
       </div>
     </div>
     );

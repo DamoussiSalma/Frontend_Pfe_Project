@@ -1,5 +1,6 @@
 import "./sidebar.css";
-import React from "react";
+import {Link } from "react-router-dom";
+import React,{useState,useEffect} from "react";
 import {
   Card,
   Typography,
@@ -14,7 +15,6 @@ import {
 } from "@material-tailwind/react";
 import {
   PresentationChartBarIcon,
- 
   UserCircleIcon,
   Cog6ToothIcon,
   InboxIcon,
@@ -34,12 +34,38 @@ const Sidebar = () => {
     setOpen(open === value ? 0 : value);
   };
 
+
+  const [nb,setNb]=useState();
+
+  const getnb = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/annonce/count`,
+        {
+          method: "GET",
+        }
+      );
+
+      const data = await response.json();
+      setNb(data);
+    } catch (err) {
+      console.log("annonce count Failed", err.message);
+    }
+  };
+
+  useEffect(() => {
+      getnb();
+     
+    }, []);
+
+
+
  return (
  <div className="sidebar"> 
-   <Card className="h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
+   <Card className="h-[calc(180vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
      <div className="mb-2 p-4">
        <Typography variant="h5" color="blue-gray">
-         HomeKey
+         Vacay
        </Typography>
      </div>
      <List>
@@ -58,32 +84,11 @@ const Sidebar = () => {
                <PresentationChartBarIcon className="h-5 w-5" />
              </ListItemPrefix>
              <Typography color="blue-gray" className="mr-auto font-normal">
-               Dashboard
+              <Link to ="/dashboard">Dashboard</Link> 
              </Typography>
            </AccordionHeader>
          </ListItem>
-         <AccordionBody className="py-1">
-           <List className="p-0">
-             <ListItem>
-               <ListItemPrefix>
-                 <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-               </ListItemPrefix>
-               Analytics
-             </ListItem>
-             <ListItem>
-               <ListItemPrefix>
-                 <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-               </ListItemPrefix>
-               Reporting
-             </ListItem>
-             <ListItem>
-               <ListItemPrefix>
-                 <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-               </ListItemPrefix>
-               Projects
-             </ListItem>
-           </List>
-         </AccordionBody>
+  
        </Accordion>
        <Accordion
          open={open === 2}
@@ -99,8 +104,8 @@ const Sidebar = () => {
              <ListItemPrefix>
                <UserGroupIcon className="h-5 w-5" />
              </ListItemPrefix>
-             <Typography color="blue-gray" className="mr-auto font-normal">
-               Users
+             <Typography  color="blue-gray" className="mr-auto font-normal">
+             <Link to ="/users">Users</Link> 
              </Typography>
            </AccordionHeader>
          </ListItem>
@@ -110,13 +115,13 @@ const Sidebar = () => {
                <ListItemPrefix>
                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
                </ListItemPrefix>
-               Hosts
+               Propriétaire
              </ListItem>
              <ListItem>
                <ListItemPrefix>
                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
                </ListItemPrefix>
-               Tenants
+               Locataire
              </ListItem>
            </List>
          </AccordionBody>
@@ -126,9 +131,9 @@ const Sidebar = () => {
          <ListItemPrefix>
            <InboxIcon className="h-5 w-5" />
          </ListItemPrefix>
-         Annonces
+         <Link to ="/annonces">Annonces</Link> 
          <ListItemSuffix>
-           <Chip value="14" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+           <Chip value={nb} size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
          </ListItemSuffix>
        </ListItem>
 
