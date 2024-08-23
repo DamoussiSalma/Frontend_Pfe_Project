@@ -12,7 +12,6 @@ const Dashboard = () => {
           <Widget type="user" />
           <Widget type="annonce" />
           <Widget type="reservation" />
-          <Widget type="balance" />
         </div>
         
       </div>
